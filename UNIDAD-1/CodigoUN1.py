@@ -40,10 +40,21 @@ class CodigoUN1:
             print('Open ... ')
 
             frame = None
+            frame_ant = None
+            resta = None
+            primero = True
 
             while(3==3):
                 ret, frame = video.read()
-                cv2.imshow('Video', frame)
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+                if primero==True:
+                    primero = False
+                    frame_ant = np.copy(frame)
+
+                resta = cv2.absdiff(frame_ant,frame)
+                frame_ant = np.copy(frame)
+                cv2.imshow('Video', resta)
 
                 if cv2.waitKey(23)==27:
                     break
