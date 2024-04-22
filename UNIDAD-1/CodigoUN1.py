@@ -1,5 +1,6 @@
 import cv2
 import os
+import math
 
 import matplotlib.pyplot as pp
 import numpy as np
@@ -69,6 +70,60 @@ class CodigoUN1:
 
     def evento_track(self, valor):
         pass
+
+
+    def sigmoideo(self, k, matriz, m):
+        # Sigmoideo
+        # s = 1/(1+exp(-k(x-m)))
+        r = 255.0/(1.0+np.exp(-k*(matriz-m)))
+        return r.astype(np.uint8)
+
+
+    def contrast_stretching(self):
+        cv2.namedWindow('CS-Window', cv2.WINDOW_AUTOSIZE)
+
+        video = cv2.VideoCapture(0)
+        if (video.isOpened()):
+            frame = None
+            gray = None
+            ret = None
+            vacia = True
+
+            cv2.createTrackbar('k', 'CS-Window', 0, 100, self.evento_track)
+            cv2.createTrackbar('m', 'CS-Window', 0, 2550, self.evento_track)
+
+            k = 0
+            m = 0
+            sigm = 0
+
+            while (3==3):
+                ret, frame = video.read()
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                
+                if (vacia):
+                    binaria = gray.copy()
+                    vacia = False
+
+                cv2.imshow('CS-Window', gray)
+
+                k = float(cv2.getTrackbarPos('k', 'CS-Window'))/10
+                m = float(cv2.getTrackbarPos('m', 'CS-Window'))/10
+
+
+                binaria = self.sigmoideo(k, gray, m)
+
+                cv2.imshow('CS-Binaria', binaria)
+
+                #print(f'k: {k} m: {m}')
+
+
+
+                if (cv2.waitKey(23)==27):
+                    break
+            
+            video.release()
+            cv2.destroyAllWindows()
+
 
     
     def seleccion_pixeles_rango(self):
@@ -140,4 +195,5 @@ if __name__=="__main__":
     #cod.read_image()
     #cod.create_img()
     #cod.motion_detector()
-    cod.seleccion_pixeles_rango()
+    #cod.seleccion_pixeles_rango()
+    cod.contrast_stretching()
